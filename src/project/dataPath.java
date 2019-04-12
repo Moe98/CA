@@ -13,10 +13,87 @@ public class dataPath {
 	public static void main(String[] args) {
 	}
 
-	static boolean[] ALU(boolean[] readData1, boolean[] readData2, boolean[] ALU_Control) {
-		boolean[] ALU_Result = new boolean[sizeOfData];
-		// TODO implement ALU logic
-		return ALU_Result;
+	static boolean[] ALU(boolean[] readData1, boolean[] readData2, boolean[] ALU_Control) throws Exception {
+		int control=toInt(ALU_Control);
+		int data1=toInt(readData1);
+		int data2=toInt(readData2);
+		if(control==0)
+			return toBooleanArray(data1+data2);
+		else if(control==1)
+			return toBooleanArray(data1-data2);
+		else if(control==2)
+			return toBooleanArray(data1*data2);
+		else if(control==3)
+			return toBooleanArray(data1/data2);
+		else if(control==4)
+			return toBooleanArray(data1%data2);
+		else if(control==5)
+			return toBooleanArray(Integer.bitCount(data1));//TODO check if it uses data1 or data2
+		else if(control==6)
+			return toBooleanArray(-1*data1);//TODO check if it uses data1 or data2
+		else if(control==7)
+			return toBooleanArray((int)Math.pow(data1, data2));
+		else if(control==8)
+			return toBooleanArray(Math.abs(data1));//TODO check if it uses data1 or data2
+		else if(control==9)
+		{
+			boolean [] sol=new boolean[readData1.length];
+			for(int i=0;i<readData1.length;i++)
+				sol[i]=readData1[i]&readData2[i];
+			return sol;
+		}
+		else if(control==10)
+		{
+			boolean [] sol=new boolean[readData1.length];
+			for(int i=0;i<readData1.length;i++)
+				sol[i]=readData1[i]|readData2[i];
+			return sol;
+		}
+		else if(control==11)
+		{
+			boolean [] sol=new boolean[readData1.length];
+			for(int i=0;i<readData1.length;i++)
+				sol[i]=readData1[i]^readData2[i];
+			return sol;
+		}
+		else if(control==12)
+		{
+			boolean [] sol=new boolean[readData1.length];
+			for(int i=0;i<readData1.length;i++)
+				sol[i]=!(readData1[i]|readData2[i]);
+			return sol;
+		}
+		else if(control==13)
+		{
+			boolean [] sol=new boolean[readData1.length];
+			for(int i=0;i<readData1.length;i++)
+				sol[i]=!(readData1[i]^readData2[i]);
+			return sol;
+		}
+		else if(control==14)
+		{
+			boolean [] sol=new boolean[readData1.length];
+			for(int i=0;i<readData1.length;i++)
+				sol[i] = readData1[(i + data2) % readData1.length];
+			return sol;
+		}
+		else if(control==15)
+		{
+			boolean [] sol=new boolean[readData1.length];
+			for(int i=0;i<readData1.length;i++)
+				sol[i] = readData1[(i - data2) % readData1.length];
+			return sol;
+		}
+		else if(control==16)
+			return toBooleanArray(data1<data2 ? 1:0);
+		else if(control==17)
+		{
+			boolean [] sol=new boolean[readData1.length];
+			for(int i=0;i<readData1.length;i++)
+				sol[i] = !readData1[i];
+			return sol;
+		}
+		throw new Exception("Invalid Control Signal");
 	}
 
 	static int ADD4(int PC) {
