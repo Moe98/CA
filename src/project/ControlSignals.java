@@ -6,7 +6,7 @@ public class ControlSignals {
 	boolean Branch;
 	boolean MemRead;
 	boolean MemToReg;
-	boolean ALUOp;
+	boolean[] ALUOp;
 	boolean MemWrite;
 	boolean ALUSrc;
 	boolean RegWrite;
@@ -17,7 +17,9 @@ public class ControlSignals {
 		Branch = false;
 		MemRead = false;
 		MemToReg = false;
-		ALUOp = false;
+		ALUOp=new boolean [2];
+		ALUOp[0] = false;
+		ALUOp[1] = false;
 		MemWrite = false;
 		ALUSrc = false;
 		RegWrite = false;
@@ -30,7 +32,9 @@ public class ControlSignals {
 		this.Branch = Branch;
 		this.MemRead = MemRead;
 		this.MemToReg = MemToReg;
-		this.ALUOp = ALUOp;
+		this.ALUOp=new boolean [2];
+		this.ALUOp[0] = ALUOp[0];
+		this.ALUOp[1] = ALUOp[1];
 		this.MemWrite = MemWrite;
 		this.ALUSrc = ALUSrc;
 		this.RegWrite = RegWrite;
