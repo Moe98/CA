@@ -4,10 +4,12 @@ public class dataPath {
 	static final int instructionMemorySize = 1024;
 	static final int dataMemorySize = 1024;
 	static final int sizeOfData = 32;
+	static final int numberOfRegisters = 15;
+	
 	static int PC = 0;
 	static boolean[][] instructionMemory = new boolean[instructionMemorySize][18];
 	static boolean[][] dataMemory = new boolean[dataMemorySize][sizeOfData];
-
+	static boolean[][] registers = new boolean [numberOfRegisters][sizeOfData];
 	public static void main(String[] args) {
 	}
 
@@ -66,14 +68,17 @@ public class dataPath {
 	}
 
 	static boolean[][] Registers(boolean[] readRegister1, boolean[] readRegister2, boolean[] writeRegister,
-			boolean[] writeData) {
-		boolean[] readData1 = null;
-		boolean[] readData2 = null;
+	boolean[] writeData, boolean regWrite) {
 		/*
 		 * returns an Array (length 2) of bits(booleans) position 0 is ReadData1
 		 * position 1 is ReadData2
 		 */
-		// TODO implement Registers Logic
+		boolean[] readData1 = registers[toInt(readRegister1)];
+		boolean[] readData2 = registers[toInt(readRegister2)];
+		
+		if(regWrite)
+			registers[toInt(writeRegister)]=writeData;
+		
 		return new boolean[][] { readData1, readData2 };
 	}
 
