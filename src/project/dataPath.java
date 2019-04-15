@@ -13,7 +13,7 @@ public class dataPath {
 	static boolean[][] dataMemory = new boolean[dataMemorySize][sizeOfData];
 	static boolean[][] registers = new boolean [numberOfRegisters][sizeOfData];
   
-	public static void main(String[] args) 
+	public static void main(String[] args) throws Exception 
 	{
 		
 		boolean [] instruction = instructionMemory[PC];
@@ -24,29 +24,9 @@ public class dataPath {
 		boolean [] part12to15=Arrays.copyOfRange(instruction, 12, 15);
 		boolean [] part16to17=Arrays.copyOfRange(instruction, 16, 17);
 		
-		ControlSignals control=Control(part16to17);
+		ControlSignals control=Control(part16to17,part0to3);
 		
-		boolean [] writeRegister=Mux(part8to11, part4to7, control.RegDest);
-		boolean [] [] registers=Registers(part12to15, part8to11, writeRegister, writeData, control.RegWrite);
-		boolean [] readData1=registers[0];
-		boolean [] readData2=registers[1];
 		
-		boolean [] extendedBits=signExtent(part0to7);
-		boolean [] aluControl=ALU_Control(part0to3, control.ALUOp);
-		
-		boolean []  ALU_ReadData2=Mux(readData2, extendedBits, control.ALUSrc);
-		boolean [] aluResult=ALU(readData1, ALU_ReadData2, aluControl);
-		
-		int PC_Added4=ADD4(PC);
-		boolean [] branchAddress=shiftLeft2(extendedBits);
-		boolean [] ALU_Result=ADD(branchAddress, PC_Added4);
-		boolean andedSignal=AND(control.Branch, Zero);
-		boolean [] upperMux1=Mux(toBooleanArray(PC_Added4), ALU_Result, andedSignal);
-		boolean [] upperMux2=Mux(readData1, upperMux1, control.Jump);
-		
-		boolean [] data=dataMemory(aluResult, readData2, control.MemRead, control.MemWrite);
-		boolean [] writeData= Mux(aluResult, data, control.MemToReg);
-		Registers(part12to15, part8to11, writeRegister, writeData, control.RegWrite);
 	}
 
 	static boolean[] ALU(boolean[] readData1, boolean[] readData2, boolean[] ALU_Control) throws Exception {
@@ -147,9 +127,43 @@ public class dataPath {
 		return extendedBits;
 	}
 
-	static ControlSignals Control(boolean[] opcode) {
-		ControlSignals signals = new ControlSignals();
-		// TODO implemnt Control logic
+	static ControlSignals Control(boolean[] opcode ,boolean[] funct) {
+		ControlSignals signals = null;
+		if(opcode[0]&&opcode[1]) {
+			//AR type 11
+			boolean aluop [] = {true,true};
+		    signals= new ControlSignals(true,  false, false, false, false, aluop, false, false, true);		
+		}else if (opcode[0]&&!opcode[1]) {
+			//LO type 10
+			boolean aluop [] = {true,true};
+		    signals= new ControlSignals(true,  false, false, false, false, aluop, false, false, true);		
+			
+		}else if (!opcode[0]&&opcode[1]) {
+			//br type & j
+			
+			// in case of J
+			if((!funct[0]&!funct[1]&!funct[2]&!funct[3])||(!funct[0]&!funct[1]&!funct[2]&funct[3]))
+		    signals= new ControlSignals(false,  true, false, false, false, null, false, false, false);		
+			else {
+		    //in case of br
+			boolean aluop [] = {true,true};
+		    signals= new ControlSignals(false,  false, true, false, false, aluop, false, false, false);	
+			}
+			
+		}else if (!opcode[0]&&!opcode[1]) {
+			//load and sw
+			if((!funct[0]&!funct[1]&!funct[2]&!funct[3])) {
+				boolean aluop [] = {true,true};
+			    signals=  new ControlSignals(false, false, false, true, true, aluop, false, true, true);		
+			}else if((!funct[0]&!funct[1]&!funct[2]&funct[3])) {
+				boolean aluop [] = {true,true};
+			    signals=  new ControlSignals(false, false, false, false, false, aluop, true, true, false);	
+			    
+			}else{
+				//load and swap ?!
+			}
+					    
+		}
 		return signals;
 	}
 
