@@ -14,14 +14,14 @@ public class dataPath {
 	static boolean[][] registers = new boolean [numberOfRegisters][sizeOfData];
 	public static void main(String[] args) throws Exception 
 	{
-		instructionMemory[0]=new boolean [] {false,false,true,true,//funct 
+		instructionMemory[0]=new boolean [] {true,false,false,true,//funct 
 											false,false,true,false,//rd
-											false,false,false,true,//rs
+											false,false,false,false,//rs
 											false,false,false,false,//rt
 											true,true				//opcode
 											};
-		registers[0]=toBooleanArray(2);
-		registers[1]=toBooleanArray(5);
+		registers[0]=toBooleanArray(-4);
+//		registers[1]=toBooleanArray(2);
 		run1Cycle();
 		System.out.println(toInt(registers[2]));
 	}
@@ -36,7 +36,6 @@ public class dataPath {
 		boolean [] part12to15=reverse(Arrays.copyOfRange(instruction, 12, 16));
 		boolean [] part16to17=reverse(Arrays.copyOfRange(instruction, 16, 18));
 		boolean [] registerRA=toBooleanArray(8);
-		
 		ControlSignals control=Control(part16to17,part0to3);
 		
 		boolean [] writeRegister=Mux(part8to11, part4to7, registerRA, control.RegDest);
@@ -47,7 +46,7 @@ public class dataPath {
 		boolean [] extendedBits=signExtent(part0to7);
 		boolean [] aluControl=ALU_Control(part0to3, control.ALUOp);
 		
-		boolean []  ALU_ReadData2=Mux(readData2, extendedBits, control.ALUSrc);
+		boolean []  ALU_ReadData2=Mux(readData2, part8to11, control.ALUSrc);
 		boolean [][] aluResult=ALU(readData1, ALU_ReadData2, aluControl);
 		boolean [] actualResult=aluResult[0];
 		boolean Zero = aluResult[1][0];
@@ -70,7 +69,7 @@ public class dataPath {
 		int control=toInt(ALU_Control);
 		int data1=toInt(readData1);
 		int data2=toInt(readData2);
-
+		System.out.println("ALU INPUTS: "+data1+" "+data2);
 		if(control==0)//ADD
 			return new boolean[][] { toBooleanArray(data1+data2), toBooleanArray(0) };
 		else if(control==1)//SUB
@@ -173,9 +172,7 @@ public class dataPath {
 		else if(control==27)//BRANCH_IF_ALL_ZERO
 			return new boolean[][] { new boolean [0], toBooleanArray(data1==0? 1:0) };
 		else if(control==28)//BRANCH_ON_ABSOLUTE
-		{
-			//TODO branchonAbsolute
-		}
+			return new boolean[][] { new boolean [0], toBooleanArray(Math.abs(data1)==Math.abs(data2)? 1:0) };
 		else if(control==29)//BRANCH_ON_DIVISIBLE
 			return new boolean[][] { new boolean [0], toBooleanArray(data1%data2==0? 1:0) };
 		else if(control==30)//LW / SW / STORE_AND_SWAP
@@ -199,40 +196,34 @@ public class dataPath {
 		return extendedBits;
 	}
 
-	static ControlSignals Control(boolean[] opcode ,boolean[] funct) {
+	static ControlSignals Control(boolean[] opcode ,boolean[] funct) 
+	{
 		ControlSignals signals = null;
-		if(opcode[0]&&opcode[1]) 
+		if(opcode[0] && opcode[1]) //Arithmetic
 		{
-			//AR type 11
-			boolean [] regdest = {false,true};
+			boolean [] regdest = {true,false};
 			boolean [] aluop = {true,true};
 			boolean [] memToReg = {false,false};
-		    signals= new ControlSignals(regdest, false, false, false, memToReg, aluop, false, false, true);		
+		    signals= new ControlSignals(regdest, false, false, false, memToReg, aluop, false, toInt(funct)==1? true:false, true);		
 		}
-		else if (opcode[0]&&!opcode[1]) 
+		else if (!opcode[0] && opcode[1]) //Logical
 		{
-			//LO type 10
-			boolean [] regdest = {false,true};
+			boolean [] regdest = {true,false};
 			boolean aluop [] = {true,false};
 			boolean [] memToReg = {false,false};
 		    signals= new ControlSignals(regdest, false, false, false, memToReg, aluop, false, false, true);		
-			
 		}
-		else if (!opcode[0]&&opcode[1]) 
+		else if (opcode[0] && !opcode[1]) //Branches and Jumps
 		{
-			//br type & j
-			
-			// in case of J
-			if((!funct[0]&!funct[1]&!funct[2]&!funct[3])||(!funct[0]&!funct[1]&!funct[2]&funct[3]))
+			if(toInt(funct)==0 || toInt(funct)==1 )//Jump
 		    {
-				boolean [] regdest = {false,true};//TODO review this
+				boolean [] regdest = {false,true};
 				boolean aluop [] = {false,true};
 				boolean [] memToReg = {false,false};
-				signals= new ControlSignals(regdest, true, false, false, memToReg, aluop, false, false, false);		
+				signals= new ControlSignals(regdest, true, false, false, memToReg, aluop, false, false, funct[0]);//TODO Review this	
 		    }
-			else 
+			else //Branch
 			{
-			    //in case of br
 				boolean [] regdest = {false,false};
 				boolean aluop [] = {false,true};
 				boolean [] memToReg = {false,false};
@@ -240,27 +231,24 @@ public class dataPath {
 			}
 			
 		}
-		else if (!opcode[0]&&!opcode[1]) 
+		else if (!opcode[0] && !opcode[1]) 
 		{
-			//LoadWord
-			if((!funct[0]&!funct[1]&!funct[2]&!funct[3])) 
+			if(toInt(funct)==0) //LoadWord
 			{
 				boolean [] regdest = {false,false};
 				boolean aluop [] = {false,false};
 				boolean [] memToReg = {false,true};
 			    signals=  new ControlSignals(regdest,false, false, true, memToReg, aluop, false, true, true);		
 			}
-			//StoreWord
-			else if((!funct[0]&!funct[1]&!funct[2]&funct[3])) 
+			else if(toInt(funct)==1)//StoreWord
 			{
 				boolean [] regdest = {false,false};
 				boolean aluop [] = {false,false};
 				boolean [] memToReg = {false,false};
 			    signals=  new ControlSignals(regdest, false, false, false, memToReg, aluop, true, true, false);	
 			}
-			else
+			else//LoadAndSwap
 			{
-				//load and swap ?!
 				boolean [] regdest = {false,false};
 				boolean aluop [] = {false,false};
 				boolean [] memToReg = {false,true};
@@ -273,7 +261,7 @@ public class dataPath {
 
 	static boolean[] ALU_Control(boolean[] funct, boolean[] ALUOp) {
 		if(ALUOp[0]&&ALUOp[1]) //Arithmetic
-			return  toBooleanArray(Math.min(0, toInt(funct)-1));
+			return  toBooleanArray(Math.max(0, toInt(funct)-1));
 		else if(!ALUOp[0] && ALUOp[1]) //Logical Operations
 			return toBooleanArray(toInt(funct)+9);
 		else if(ALUOp[0] && !ALUOp[1])
@@ -303,7 +291,9 @@ public class dataPath {
 
 	static boolean[] dataMemory(boolean[] Address, boolean[] writeData, boolean MemRead, boolean MemWrite) {
 		int intAddress = toInt(Address);
-		boolean [] oldData=dataMemory[intAddress];
+		boolean [] oldData=null;
+		if(MemRead)
+			oldData=dataMemory[intAddress];
 		if (MemWrite)
 			dataMemory[intAddress] = writeData;
 		return oldData;
@@ -317,7 +307,7 @@ public class dataPath {
 		 */
 		boolean[] readData1 = registers[toInt(readRegister1)];
 		boolean[] readData2 = registers[toInt(readRegister2)];
-		
+
 		if(regWrite)
 			registers[toInt(writeRegister)]=writeData;
 		
