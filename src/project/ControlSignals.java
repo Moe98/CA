@@ -1,40 +1,36 @@
 package project;
 
 public class ControlSignals {
-	boolean RegDest;
+	boolean[] RegDest;
 	boolean Jump;
 	boolean Branch;
 	boolean MemRead;
-	boolean MemToReg;
+	boolean[] MemToReg;
 	boolean[] ALUOp;
 	boolean MemWrite;
 	boolean ALUSrc;
 	boolean RegWrite;
 
 	ControlSignals() {
-		RegDest = false;
+		RegDest = new boolean[] {false,false};
 		Jump = false;
 		Branch = false;
 		MemRead = false;
-		MemToReg = false;
-		ALUOp=new boolean [2];
-		ALUOp[0] = false;
-		ALUOp[1] = false;
+		MemToReg = new boolean[] {false,false};
+		ALUOp=new boolean[] {false,false};
 		MemWrite = false;
 		ALUSrc = false;
 		RegWrite = false;
 	}
 
-	ControlSignals(boolean RegDest, boolean Jump, boolean Branch, boolean MemRead, boolean MemToReg, boolean[] ALUOp,
+	ControlSignals(boolean[] RegDest, boolean Jump, boolean Branch, boolean MemRead, boolean[] MemToReg, boolean[] ALUOp,
 			boolean MemWrite, boolean ALUSrc, boolean RegWrite) {
-		this.RegDest = RegDest;
+		this.RegDest = new boolean[] {RegDest[0], RegDest[1]};
 		this.Jump = Jump;
 		this.Branch = Branch;
 		this.MemRead = MemRead;
-		this.MemToReg = MemToReg;
-		this.ALUOp=new boolean [2];
-		this.ALUOp[0] = ALUOp[0];
-		this.ALUOp[1] = ALUOp[1];
+		this.MemToReg = new boolean [] {MemToReg[0], MemToReg[1]};
+		this.ALUOp= new boolean [] {ALUOp[0], ALUOp[1]};
 		this.MemWrite = MemWrite;
 		this.ALUSrc = ALUSrc;
 		this.RegWrite = RegWrite;
