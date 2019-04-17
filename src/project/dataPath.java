@@ -1,7 +1,6 @@
 package project;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 public class dataPath {
 	static final int instructionMemorySize = 1024;
@@ -14,16 +13,19 @@ public class dataPath {
 	static boolean[][] registers = new boolean [numberOfRegisters][sizeOfData];
 	public static void main(String[] args) throws Exception 
 	{
-		instructionMemory[0]=new boolean [] {false,false,false,true,//funct 
-											false,false,true,true,//rd
-											false,false,true,false,//rs
-											false,false,false,true,//rt
+		instructionMemory[0]=new boolean [] {false,false,true,false,//funct 
+											false,false,true,true,//rd (offset)
+											false,false,true,false,//rs (data reg)
+											false,false,false,true,//rt (base)
 											false,false				//opcode
 											};
-		registers[3]=toBooleanArray(5);
+		registers[2]=toBooleanArray(7);
 		registers[1]=toBooleanArray(2);
+		System.out.println("Register: "+toInt(registers[2]));
+		System.out.println("Memory: "+toInt(dataMemory[5]));
 		run1Cycle();
-		System.out.println(toInt(dataMemory[4]));
+		System.out.println("Register: "+toInt(registers[2]));
+		System.out.println("Memory: "+toInt(dataMemory[5]));
 //		System.out.println("PC: "+PC);
 //		System.out.println("ANS: "+toInt(registers[8]));
 	}
@@ -31,7 +33,6 @@ public class dataPath {
 	{
 		boolean [] instruction = instructionMemory[PC];
 		
-		boolean [] part0to7=reverse(Arrays.copyOfRange(instruction, 0, 8));
 		boolean [] part0to3=reverse(Arrays.copyOfRange(instruction, 0, 4));
 		boolean [] part4to7=reverse(Arrays.copyOfRange(instruction, 4, 8));
 		boolean [] part8to11=reverse(Arrays.copyOfRange(instruction, 8, 12));
@@ -39,7 +40,6 @@ public class dataPath {
 		boolean [] part16to17=reverse(Arrays.copyOfRange(instruction, 16, 18));
 		boolean [] registerRA=toBooleanArray(8);
 		ControlSignals control=Control(part16to17,part0to3);
-		System.out.println(toInt(control.RegDest));
 
 		boolean [] writeRegister=Mux(part8to11, part4to7, registerRA, control.RegDest);
 		boolean [] [] localregisters=Registers(part12to15, part8to11, writeRegister, null, control.RegWrite);
@@ -48,7 +48,7 @@ public class dataPath {
 		
 		boolean [] aluControl=ALU_Control(part0to3, control.ALUOp);
 		
-		boolean [] readData2Mux=Mux(readData2, part8to11, control.ALUSrc);
+		boolean [] readData2Mux=Mux(readData2, part8to11,part4to7, control.ALUSrc);
 		boolean [][] aluResult=ALU(readData1, readData2Mux, aluControl);
 		boolean [] actualResult=aluResult[0];
 		boolean Zero = aluResult[1][0];
@@ -62,6 +62,7 @@ public class dataPath {
 		
 		boolean [] data=dataMemory(actualResult, readData2, control.MemRead, control.MemWrite);
 		boolean [] writeData= Mux(actualResult, data,toBooleanArray(PC_Added4), control.MemToReg);
+		
 		Registers(part12to15, part8to11, writeRegister, writeData, control.RegWrite);
 	}
 
@@ -197,22 +198,23 @@ public class dataPath {
 		return extendedBits;
 	}
 
-	static ControlSignals Control(boolean[] opcode ,boolean[] funct) 
+	static ControlSignals Control(boolean[] opcode ,boolean[] funct) throws Exception 
 	{
-		ControlSignals signals = null;
 		if(opcode[0] && opcode[1]) //Arithmetic
 		{
 			boolean [] regdest = {true,false};
 			boolean [] aluop = {true,true};
 			boolean [] memToReg = {false,false};
-		    signals= new ControlSignals(regdest, false, false, false, memToReg, aluop, false, toInt(funct)==1? true:false, true);		
+			boolean [] aluSrc = {toInt(funct)==1? true:false,false};
+		    return new ControlSignals(regdest, false, false, false, memToReg, aluop, false, aluSrc, true);		
 		}
 		else if (!opcode[0] && opcode[1]) //Logical
 		{
 			boolean [] regdest = {true,false};
 			boolean aluop [] = {true,false};
 			boolean [] memToReg = {false,false};
-		    signals= new ControlSignals(regdest, false, false, false, memToReg, aluop, false, false, true);		
+			boolean [] aluSrc = {false, false};
+		    return new ControlSignals(regdest, false, false, false, memToReg, aluop, false, aluSrc, true);		
 		}
 		else if (opcode[0] && !opcode[1]) //Branches and Jumps
 		{
@@ -221,22 +223,24 @@ public class dataPath {
 				boolean [] regdest = {false,true};
 				boolean aluop [] = {false,true};
 				boolean [] memToReg = {false,true};
-				signals= new ControlSignals(regdest, true, false, false, memToReg, aluop, false, false, true);//TODO Review this	
+				boolean [] aluSrc = {false, false};
+				return new ControlSignals(regdest, true, false, false, memToReg, aluop, false, aluSrc, true);//TODO Review this	
 		    }
 			else if(toInt(funct)==1)//JR
 			{
 				boolean [] regdest = {false,true};
 				boolean aluop [] = {false,true};
 				boolean [] memToReg = {false,false};
-				System.out.println(Arrays.toString(funct));
-				signals= new ControlSignals(regdest, true, false, false, memToReg, aluop, false, false, false);//TODO Review this
+				boolean [] aluSrc = {false, false};
+				return new ControlSignals(regdest, true, false, false, memToReg, aluop, false, aluSrc, false);//TODO Review this
 			}
 			else //Branch
 			{
 				boolean [] regdest = {false,false};
 				boolean aluop [] = {false,true};
 				boolean [] memToReg = {false,false};
-			    signals= new ControlSignals(regdest, false, true, false, memToReg, aluop, false, false, false);	
+				boolean [] aluSrc = {false,false};
+			    return new ControlSignals(regdest, false, true, false, memToReg, aluop, false, aluSrc, false);	
 			}
 			
 		}
@@ -247,25 +251,28 @@ public class dataPath {
 				boolean [] regdest = {true,false};
 				boolean aluop [] = {false,false};
 				boolean [] memToReg = {true,false};
-			    signals=  new ControlSignals(regdest,false, false, true, memToReg, aluop, false, true, true);		
+				boolean [] aluSrc = {true,false};
+			    return new ControlSignals(regdest,false, false, true, memToReg, aluop, false, aluSrc, true);		
 			}
 			else if(toInt(funct)==1)//StoreWord
 			{
 				boolean [] regdest = {true,false};
 				boolean aluop [] = {false,false};
 				boolean [] memToReg = {false,false};
-			    signals=  new ControlSignals(regdest, false, false, false, memToReg, aluop, true, true, false);	
+				boolean [] aluSrc = {false,true};
+			    return new ControlSignals(regdest, false, false, false, memToReg, aluop, true, aluSrc, false);	
 			}
 			else//LoadAndSwap
 			{
 				boolean [] regdest = {false,false};
 				boolean aluop [] = {false,false};
 				boolean [] memToReg = {true,false};
-				new ControlSignals(regdest, false, false, false, memToReg, aluop, true, true, false);
+				boolean [] aluSrc = {false,true};
+				return new ControlSignals(regdest, false, false, true, memToReg, aluop, true, aluSrc, true);
 			}
 					    
 		}
-		return signals;
+		throw new Exception("Error in control Invalid Opcode or funct");
 	}
 
 	static boolean[] ALU_Control(boolean[] funct, boolean[] ALUOp) {
