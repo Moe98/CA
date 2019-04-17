@@ -14,16 +14,18 @@ public class dataPath {
 	static boolean[][] registers = new boolean [numberOfRegisters][sizeOfData];
 	public static void main(String[] args) throws Exception 
 	{
-		instructionMemory[0]=new boolean [] {true,false,false,true,//funct 
-											false,false,true,false,//rd
-											false,false,false,false,//rs
-											false,false,false,false,//rt
-											true,true				//opcode
+		instructionMemory[0]=new boolean [] {false,false,false,true,//funct 
+											false,false,true,true,//rd
+											false,false,true,false,//rs
+											false,false,false,true,//rt
+											false,false				//opcode
 											};
-		registers[0]=toBooleanArray(-4);
-//		registers[1]=toBooleanArray(2);
+		registers[3]=toBooleanArray(5);
+		registers[1]=toBooleanArray(2);
 		run1Cycle();
-		System.out.println(toInt(registers[2]));
+		System.out.println(toInt(dataMemory[4]));
+//		System.out.println("PC: "+PC);
+//		System.out.println("ANS: "+toInt(registers[8]));
 	}
 	static void run1Cycle() throws Exception
 	{
@@ -37,26 +39,25 @@ public class dataPath {
 		boolean [] part16to17=reverse(Arrays.copyOfRange(instruction, 16, 18));
 		boolean [] registerRA=toBooleanArray(8);
 		ControlSignals control=Control(part16to17,part0to3);
-		
+		System.out.println(toInt(control.RegDest));
+
 		boolean [] writeRegister=Mux(part8to11, part4to7, registerRA, control.RegDest);
 		boolean [] [] localregisters=Registers(part12to15, part8to11, writeRegister, null, control.RegWrite);
 		boolean [] readData1=localregisters[0];
 		boolean [] readData2=localregisters[1];
 		
-		boolean [] extendedBits=signExtent(part0to7);
 		boolean [] aluControl=ALU_Control(part0to3, control.ALUOp);
 		
-		boolean []  ALU_ReadData2=Mux(readData2, part8to11, control.ALUSrc);
-		boolean [][] aluResult=ALU(readData1, ALU_ReadData2, aluControl);
+		boolean [] readData2Mux=Mux(readData2, part8to11, control.ALUSrc);
+		boolean [][] aluResult=ALU(readData1, readData2Mux, aluControl);
 		boolean [] actualResult=aluResult[0];
 		boolean Zero = aluResult[1][0];
 		
 		int PC_Added4=ADD4(PC);
-		boolean [] branchAddress=shiftLeft2(extendedBits);
-		boolean [] branch_Result=ADD(branchAddress, PC_Added4);
+		boolean [] branch_Result=ADD(part4to7, PC_Added4);
 		boolean andedSignal=AND(control.Branch, Zero);
 		boolean [] upperMux1=Mux(toBooleanArray(PC_Added4), branch_Result, andedSignal);
-		boolean [] upperMux2=Mux(readData1, upperMux1, control.Jump);
+		boolean [] upperMux2=Mux(upperMux1,readData1, control.Jump);
 		PC=toInt(upperMux2);
 		
 		boolean [] data=dataMemory(actualResult, readData2, control.MemRead, control.MemWrite);
@@ -176,13 +177,13 @@ public class dataPath {
 		else if(control==29)//BRANCH_ON_DIVISIBLE
 			return new boolean[][] { new boolean [0], toBooleanArray(data1%data2==0? 1:0) };
 		else if(control==30)//LW / SW / STORE_AND_SWAP
-			return new boolean[][] { new boolean [0], toBooleanArray(0) };
+			return new boolean[][] { toBooleanArray(data1+data2), toBooleanArray(0) };
 	
 		throw new Exception("Invalid Control Signal");
 	}
 
 	static int ADD4(int PC) {
-		return PC + 4;
+		return PC + 1;
 	}
 
 	static boolean[] ADD(boolean[] branchAddress, int PC_Added4) {
@@ -215,13 +216,21 @@ public class dataPath {
 		}
 		else if (opcode[0] && !opcode[1]) //Branches and Jumps
 		{
-			if(toInt(funct)==0 || toInt(funct)==1 )//Jump
+			if(toInt(funct)==0)//JAL
 		    {
 				boolean [] regdest = {false,true};
 				boolean aluop [] = {false,true};
-				boolean [] memToReg = {false,false};
-				signals= new ControlSignals(regdest, true, false, false, memToReg, aluop, false, false, funct[0]);//TODO Review this	
+				boolean [] memToReg = {false,true};
+				signals= new ControlSignals(regdest, true, false, false, memToReg, aluop, false, false, true);//TODO Review this	
 		    }
+			else if(toInt(funct)==1)//JR
+			{
+				boolean [] regdest = {false,true};
+				boolean aluop [] = {false,true};
+				boolean [] memToReg = {false,false};
+				System.out.println(Arrays.toString(funct));
+				signals= new ControlSignals(regdest, true, false, false, memToReg, aluop, false, false, false);//TODO Review this
+			}
 			else //Branch
 			{
 				boolean [] regdest = {false,false};
@@ -235,14 +244,14 @@ public class dataPath {
 		{
 			if(toInt(funct)==0) //LoadWord
 			{
-				boolean [] regdest = {false,false};
+				boolean [] regdest = {true,false};
 				boolean aluop [] = {false,false};
-				boolean [] memToReg = {false,true};
+				boolean [] memToReg = {true,false};
 			    signals=  new ControlSignals(regdest,false, false, true, memToReg, aluop, false, true, true);		
 			}
 			else if(toInt(funct)==1)//StoreWord
 			{
-				boolean [] regdest = {false,false};
+				boolean [] regdest = {true,false};
 				boolean aluop [] = {false,false};
 				boolean [] memToReg = {false,false};
 			    signals=  new ControlSignals(regdest, false, false, false, memToReg, aluop, true, true, false);	
@@ -251,7 +260,7 @@ public class dataPath {
 			{
 				boolean [] regdest = {false,false};
 				boolean aluop [] = {false,false};
-				boolean [] memToReg = {false,true};
+				boolean [] memToReg = {true,false};
 				new ControlSignals(regdest, false, false, false, memToReg, aluop, true, true, false);
 			}
 					    
@@ -262,9 +271,9 @@ public class dataPath {
 	static boolean[] ALU_Control(boolean[] funct, boolean[] ALUOp) {
 		if(ALUOp[0]&&ALUOp[1]) //Arithmetic
 			return  toBooleanArray(Math.max(0, toInt(funct)-1));
-		else if(!ALUOp[0] && ALUOp[1]) //Logical Operations
-			return toBooleanArray(toInt(funct)+9);
 		else if(ALUOp[0] && !ALUOp[1])
+			return toBooleanArray(toInt(funct)+9);
+		else if(!ALUOp[0] && ALUOp[1]) //Logical Operations
 			return toBooleanArray(toInt(funct)+18);
 		else //if(!ALUOp[0] && !ALUOp[1])
 			return toBooleanArray(30);
@@ -278,12 +287,6 @@ public class dataPath {
 		return signal==0? a:signal==1? b:c;
 	}
 
-	static boolean[] shiftLeft2(boolean[] bits) {
-		boolean[] shiftedBits = new boolean[bits.length];
-		for (int i = 0; i < bits.length; i++)
-			shiftedBits[i] = bits[(i + 2) % bits.length];
-		return shiftedBits;
-	}
 
 	static boolean AND(boolean a, boolean b) {
 		return a && b;
