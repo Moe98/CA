@@ -688,7 +688,7 @@ public class Compiler {
 			}
 			commandsList.add(booleanCommand);
 		}
-		commandsList.remove(0);
+//		commandsList.remove(0);
 	}
 
 	static boolean[] toBooleanArray(int num) {
