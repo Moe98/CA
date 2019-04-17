@@ -1,41 +1,73 @@
 package project;
 
 public class Tests {
-	public static void main(String[] args) throws Exception {
-		int testCount = 0;
-		int testsPassed = 0;
-//		System.out.println("Test Add: " + (addTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Sub: " + (subTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Addi: " + (addiTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Mul: " + (mulTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Div: " + (divTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Mod: " + (modTest() ? "Passed" : "Failed"));
-//		System.out.println("Test CountOne: " + (countOneTest() ? "Passed" : "Failed"));
-//		System.out.println("Test switchSign: " + (switchSignTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Power: " + (powerTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Absolute: " + (absoluteTest() ? "Passed" : "Failed"));
-//		System.out.println("Test And: " + (andTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Or: " + (orTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Xor: " + (xorTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Nor: " + (norTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Xnor: " + (xnorTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Sll: " + (sllTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Slr: " + (slrTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Slt: " + (sltTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Not: " + (notTest() ? "Passed" : "Failed"));
-		System.out.println("Test Jal: " + (jalTest() ? "Passed" : "Failed"));
-		System.out.println("Test Jr: " + (jrTest() ? "Passed" : "Failed"));
-		System.out.println("Test Beq: " + (beqTest() ? "Passed" : "Failed"));
-		System.out.println("Test Bne: " + (bneTest() ? "Passed" : "Failed"));
-		System.out.println("Test BranchOnEven: " + (branchOnEvenTest() ? "Passed" : "Failed"));
-		System.out.println("Test BranchOnAbsolute: " + (branchOnAbsoluteTest() ? "Passed" : "Failed"));
-		System.out.println("Test BranchOnDivisible: " + (branchOnDivisibleTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Xor: " + (xorTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Xor: " + (xorTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Xor: " + (xorTest() ? "Passed" : "Failed"));
-//		System.out.println("Test Xor: " + (xorTest() ? "Passed" : "Failed"));
+	static int testCount = 29;
+	static int testsPassed = 0;
 
-		// =====================================================================//
+	public static void main(String[] args) throws Exception {
+		///////////////////////////////////////////////////////////////////////////////////////////////////////
+		System.out.println("Test Add: " + (addTest() ? "Passed" : "Failed"));
+		testsPassed = addTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Sub: " + (subTest() ? "Passed" : "Failed"));
+		testsPassed = subTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Addi: " + (addiTest() ? "Passed" : "Failed"));
+		testsPassed = addiTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Mul: " + (mulTest() ? "Passed" : "Failed"));
+		testsPassed = mulTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Div: " + (divTest() ? "Passed" : "Failed"));
+		testsPassed = divTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Mod: " + (modTest() ? "Passed" : "Failed"));
+		testsPassed = modTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test CountOne: " + (countOneTest() ? "Passed" : "Failed"));
+		testsPassed = countOneTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test switchSign: " + (switchSignTest() ? "Passed" : "Failed"));
+		testsPassed = switchSignTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Power: " + (powerTest() ? "Passed" : "Failed"));
+		testsPassed = powerTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Absolute: " + (absoluteTest() ? "Passed" : "Failed"));
+		testsPassed = absoluteTest() ? testsPassed + 1 : testsPassed;
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		System.out.println("Test And: " + (andTest() ? "Passed" : "Failed"));
+		testsPassed = andTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Or: " + (orTest() ? "Passed" : "Failed"));
+		testsPassed = orTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Xor: " + (xorTest() ? "Passed" : "Failed"));
+		testsPassed = xorTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Nor: " + (norTest() ? "Passed" : "Failed"));
+		testsPassed = norTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Xnor: " + (xnorTest() ? "Passed" : "Failed"));
+		testsPassed = xnorTest() ? testsPassed + 1 : testsPassed;
+//		System.out.println("Test Sll: " + (sllTest() ? "Passed" : "Failed"));
+//		testsPassed = sllTest() ? testsPassed + 1 : testsPassed;
+//		System.out.println("Test Slr: " + (slrTest() ? "Passed" : "Failed"));
+//		testsPassed = slrTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Slt: " + (sltTest() ? "Passed" : "Failed"));
+		testsPassed = sltTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Not: " + (notTest() ? "Passed" : "Failed"));
+		testsPassed = notTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Jal: " + (jalTest() ? "Passed" : "Failed"));
+		testsPassed = jalTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Jr: " + (jrTest() ? "Passed" : "Failed"));
+		testsPassed = jrTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Beq: " + (beqTest() ? "Passed" : "Failed"));
+		testsPassed = beqTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test Bne: " + (bneTest() ? "Passed" : "Failed"));
+		testsPassed = bneTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test BranchOnEven: " + (branchOnEvenTest() ? "Passed" : "Failed"));
+		testsPassed = branchOnEvenTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test BranchOnAbsolute: " + (branchOnAbsoluteTest() ? "Passed" : "Failed"));
+		testsPassed = branchOnAbsoluteTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test BranchOnDivisible: " + (branchOnDivisibleTest() ? "Passed" : "Failed"));
+		testsPassed = branchOnDivisibleTest() ? testsPassed + 1 : testsPassed;
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		System.out.println("Test LoadWord: " + (loadWordTest() ? "Passed" : "Failed"));
+		testsPassed = loadWordTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test StoreWord: " + (storeWordTest() ? "Passed" : "Failed"));
+		testsPassed = storeWordTest() ? testsPassed + 1 : testsPassed;
+		System.out.println("Test StoreAndSwap: " + (storeAndSwapTest() ? "Passed" : "Failed"));
+		testsPassed = storeAndSwapTest() ? testsPassed + 1 : testsPassed;
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		System.out.println("Tests passed: " + testsPassed + " out of: " + testCount);
 		System.out.println("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥");
 	}
 
@@ -61,7 +93,7 @@ public class Tests {
 			dataPath.run1Cycle();
 		}
 		System.out.println(dataPath.toInt(dataPath.registers[2]));
-		return dataPath.toInt(dataPath.registers[2]) == 1;
+		return dataPath.toInt(dataPath.registers[2]) == -3;
 	}
 
 	static boolean addiTest() throws Exception {
@@ -230,7 +262,7 @@ public class Tests {
 			dataPath.run1Cycle();
 		}
 		System.out.println(dataPath.toInt(dataPath.registers[2]));
-		return dataPath.toInt(dataPath.registers[2]) == 2;
+		return dataPath.toInt(dataPath.registers[2]) == -3;
 	}
 
 	static boolean sllTest() throws Exception {
@@ -374,5 +406,46 @@ public class Tests {
 		}
 		System.out.println(dataPath.PC);
 		return dataPath.PC == 5;
+	}
+
+	static boolean loadWordTest() throws Exception {
+		dataPath.PC = 0;
+		dataPath.registers[0] = dataPath.toBooleanArray(0);
+		dataPath.registers[1] = dataPath.toBooleanArray(9);
+		Compiler.parse("loadWord $s2 1 $s0\n");
+		for (int i = Compiler.commandsList.size() - 1; i >= 0; i--) {
+			dataPath.instructionMemory[i] = Compiler.commandsList.remove(i);
+			dataPath.run1Cycle();
+		}
+		System.out.println(dataPath.PC);
+//		System.out.println(dataPath.toInt(dataPath.registers[2]));
+		return dataPath.toInt(dataPath.registers[2]) == 0;
+	}
+
+	static boolean storeWordTest() throws Exception {
+		dataPath.PC = 0;
+		dataPath.registers[0] = dataPath.toBooleanArray(0);
+		dataPath.registers[1] = dataPath.toBooleanArray(9);
+		dataPath.registers[3] = dataPath.toBooleanArray(5);
+		Compiler.parse("storeWord $s3 1 $s0\n");
+		for (int i = Compiler.commandsList.size() - 1; i >= 0; i--) {
+			dataPath.instructionMemory[i] = Compiler.commandsList.remove(i);
+			dataPath.run1Cycle();
+		}
+		System.out.println(dataPath.PC);
+		return dataPath.toInt(dataPath.registers[1]) == 2;
+	}
+
+	static boolean storeAndSwapTest() throws Exception {
+		dataPath.PC = 0;
+		dataPath.registers[0] = dataPath.toBooleanArray(4);
+		dataPath.registers[1] = dataPath.toBooleanArray(9);
+		Compiler.parse("storeAndSwap $s0 1 $s0\n");
+		for (int i = Compiler.commandsList.size() - 1; i >= 0; i--) {
+			dataPath.instructionMemory[i] = Compiler.commandsList.remove(i);
+			dataPath.run1Cycle();
+		}
+		System.out.println(dataPath.PC);
+		return dataPath.toInt(dataPath.registers[0]) == 9 && dataPath.toInt(dataPath.registers[1]) == 4;
 	}
 }
