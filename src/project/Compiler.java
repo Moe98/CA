@@ -75,13 +75,13 @@ public class Compiler {
 					throw new Exception("Enter the proper number of variables.");
 				boolean opCode[] = new boolean[] { true, true };
 				boolean funct[] = new boolean[] { false, false, false, true };
-				boolean immediate[] = toBooleanArray(Integer.parseInt(command[3]));
+				boolean immediate[] = toBooleanArray(Integer.parseInt(command[2]));
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)
-					booleanCommand[booleanCommandIterator] = immediate[j];
+					booleanCommand[booleanCommandIterator] = rt[j];
 				for (int booleanCommandIterator = 8, j = 0; booleanCommandIterator <= 11; booleanCommandIterator++, j++)
-					booleanCommand[booleanCommandIterator] = rs[j];
+					booleanCommand[booleanCommandIterator] = immediate[j];
 				for (int booleanCommandIterator = 4, j = 0; booleanCommandIterator <= 7; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = rd[j];
 				for (int booleanCommandIterator = 0, j = 0; booleanCommandIterator <= 3; booleanCommandIterator++, j++)
@@ -634,15 +634,15 @@ public class Compiler {
 					throw new Exception("Enter the proper number of variables.");
 				boolean opCode[] = new boolean[] { false, false };
 				boolean funct[] = new boolean[] { false, false, false, false };
-				boolean offset[] = toBooleanArray(Integer.parseInt(command[1]));
+				boolean offset[] = toBooleanArray(Integer.parseInt(command[2]));
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = rt[j];
 				for (int booleanCommandIterator = 8, j = 0; booleanCommandIterator <= 11; booleanCommandIterator++, j++)
-					booleanCommand[booleanCommandIterator] = rs[j];
-				for (int booleanCommandIterator = 4, j = 0; booleanCommandIterator <= 7; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = offset[j];
+				for (int booleanCommandIterator = 4, j = 0; booleanCommandIterator <= 7; booleanCommandIterator++, j++)
+					booleanCommand[booleanCommandIterator] = rd[j];
 				for (int booleanCommandIterator = 0, j = 0; booleanCommandIterator <= 3; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = funct[j];
 			} else if (command[0].equals("storeWord")) {
@@ -654,15 +654,15 @@ public class Compiler {
 					throw new Exception("Enter the proper number of variables.");
 				boolean opCode[] = new boolean[] { false, false };
 				boolean funct[] = new boolean[] { false, false, false, true };
-				boolean offset[] = toBooleanArray(Integer.parseInt(command[1]));
+				boolean offset[] = toBooleanArray(Integer.parseInt(command[2]));
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = rt[j];
 				for (int booleanCommandIterator = 8, j = 0; booleanCommandIterator <= 11; booleanCommandIterator++, j++)
-					booleanCommand[booleanCommandIterator] = rs[j];
-				for (int booleanCommandIterator = 4, j = 0; booleanCommandIterator <= 7; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = offset[j];
+				for (int booleanCommandIterator = 4, j = 0; booleanCommandIterator <= 7; booleanCommandIterator++, j++)
+					booleanCommand[booleanCommandIterator] = rd[j];
 				for (int booleanCommandIterator = 0, j = 0; booleanCommandIterator <= 3; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = funct[j];
 			} else if (command[0].equals("storeAndSwap")) {
@@ -674,15 +674,15 @@ public class Compiler {
 					throw new Exception("Enter the proper number of variables.");
 				boolean opCode[] = new boolean[] { false, false };
 				boolean funct[] = new boolean[] { false, false, true, false };
-				boolean offset[] = toBooleanArray(Integer.parseInt(command[1]));
+				boolean offset[] = toBooleanArray(Integer.parseInt(command[2]));
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = rt[j];
 				for (int booleanCommandIterator = 8, j = 0; booleanCommandIterator <= 11; booleanCommandIterator++, j++)
-					booleanCommand[booleanCommandIterator] = rs[j];
-				for (int booleanCommandIterator = 4, j = 0; booleanCommandIterator <= 7; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = offset[j];
+				for (int booleanCommandIterator = 4, j = 0; booleanCommandIterator <= 7; booleanCommandIterator++, j++)
+					booleanCommand[booleanCommandIterator] = rd[j];
 				for (int booleanCommandIterator = 0, j = 0; booleanCommandIterator <= 3; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = funct[j];
 			}
