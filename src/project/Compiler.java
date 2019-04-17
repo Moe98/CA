@@ -332,11 +332,12 @@ public class Compiler {
 					throw new Exception("Enter the proper number of variables.");
 				boolean opCode[] = new boolean[] { true, false };
 				boolean funct[] = new boolean[] { false, true, false, true };
-				boolean immediate[] = toBooleanArray(Integer.parseInt(command[3]));
+//				boolean immediate[] = toBooleanArray(Integer.parseInt(command[3]));
+//				rt = registerMap.get(command[2]);
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)
-					booleanCommand[booleanCommandIterator] = immediate[j];
+					booleanCommand[booleanCommandIterator] = rt[j];
 				for (int booleanCommandIterator = 8, j = 0; booleanCommandIterator <= 11; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = rs[j];
 				for (int booleanCommandIterator = 4, j = 0; booleanCommandIterator <= 7; booleanCommandIterator++, j++)
@@ -352,11 +353,12 @@ public class Compiler {
 				boolean opCode[] = new boolean[] { true, false };
 				boolean funct[] = new boolean[] { false, true, true, false };
 //				System.out.println("Command 3 in slr: " + command[3]);
-				boolean immediate[] = toBooleanArray(Integer.parseInt(command[3]));
+//				boolean immediate[] = toBooleanArray(Integer.parseInt(command[3]));
+//				rt = registerMap.get(command[2]);
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)
-					booleanCommand[booleanCommandIterator] = immediate[j];
+					booleanCommand[booleanCommandIterator] = rt[j];
 				for (int booleanCommandIterator = 8, j = 0; booleanCommandIterator <= 11; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = rs[j];
 				for (int booleanCommandIterator = 4, j = 0; booleanCommandIterator <= 7; booleanCommandIterator++, j++)
@@ -388,7 +390,7 @@ public class Compiler {
 				if (!(numberOfVariables > 2))
 					throw new Exception("Enter the proper number of variables.");
 				boolean opCode[] = new boolean[] { true, false };
-				boolean funct[] = new boolean[] { false, false, false, false };
+				boolean funct[] = new boolean[] { true, false, false, false };
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 //					for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator<= 15; booleanCommandIterator++, j++)
@@ -407,7 +409,7 @@ public class Compiler {
 				if (!(numberOfVariables > 1))
 					throw new Exception("Enter the proper number of variables.");
 				boolean opCode[] = new boolean[] { false, true };
-				boolean funct[] = new boolean[] { false, false, true, false };
+				boolean funct[] = new boolean[] { false, false, false, false };
 				boolean dest[] = registerMap.get(command[1]);
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
@@ -427,7 +429,7 @@ public class Compiler {
 				if (!(numberOfVariables > 1))
 					throw new Exception("Enter the proper number of variables.");
 				boolean opCode[] = new boolean[] { false, true };
-				boolean funct[] = new boolean[] { false, false, true, false };
+				boolean funct[] = new boolean[] { false, false, false, true };
 				boolean dest[] = registerMap.get(command[1]);
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
@@ -639,7 +641,8 @@ public class Compiler {
 				boolean opCode[] = new boolean[] { false, false };
 				boolean funct[] = new boolean[] { false, false, false, false };
 				boolean offset[] = toBooleanArray(Integer.parseInt(command[2]));
-				rs = registerMap.get(command[3]);
+				rs = registerMap.get(command[1]);
+				rt = registerMap.get(command[3]);
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)
@@ -660,7 +663,8 @@ public class Compiler {
 				boolean opCode[] = new boolean[] { false, false };
 				boolean funct[] = new boolean[] { false, false, false, true };
 				boolean offset[] = toBooleanArray(Integer.parseInt(command[2]));
-				rs = registerMap.get(command[3]);
+				rs = registerMap.get(command[1]);
+				rt = registerMap.get(command[3]);
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)
@@ -681,7 +685,8 @@ public class Compiler {
 				boolean opCode[] = new boolean[] { false, false };
 				boolean funct[] = new boolean[] { false, false, true, false };
 				boolean offset[] = toBooleanArray(Integer.parseInt(command[2]));
-				rs = registerMap.get(command[3]);
+				rs = registerMap.get(command[1]);
+				rt = registerMap.get(command[3]);
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)

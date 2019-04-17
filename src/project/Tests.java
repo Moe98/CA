@@ -1,5 +1,7 @@
 package project;
 
+import java.util.Arrays;
+
 public class Tests {
 	static int testCount = 0;
 	static int testsPassed = 0;
@@ -37,9 +39,9 @@ public class Tests {
 //		testsPassed = norTest() ? testsPassed + 1 : testsPassed;
 		System.out.println("Test Xnor: " + (xnorTest() ? "Passed" : "Failed"));
 //		testsPassed = xnorTest() ? testsPassed + 1 : testsPassed;
-//		System.out.println("Test Sll: " + (sllTest() ? "Passed" : "Failed"));
+		System.out.println("Test Sll: " + (sllTest() ? "Passed" : "Failed"));
 //		testsPassed = sllTest() ? testsPassed + 1 : testsPassed;
-//		System.out.println("Test Slr: " + (slrTest() ? "Passed" : "Failed"));
+		System.out.println("Test Slr: " + (slrTest() ? "Passed" : "Failed"));
 //		testsPassed = slrTest() ? testsPassed + 1 : testsPassed;
 		System.out.println("Test Slt: " + (sltTest() ? "Passed" : "Failed"));
 //		testsPassed = sltTest() ? testsPassed + 1 : testsPassed;
@@ -313,15 +315,15 @@ public class Tests {
 	static boolean sllTest() throws Exception {
 		testCount++;
 		dataPath.PC = 0;
-		dataPath.registers[0] = dataPath.toBooleanArray(16);
-		dataPath.registers[1] = dataPath.toBooleanArray(7);
-		Compiler.parse("sll $s2 $s0 3\n");
+		dataPath.registers[0] = dataPath.toBooleanArray(4);
+		dataPath.registers[1] = dataPath.toBooleanArray(2);
+		Compiler.parse("sll $s2 $s0 $s1\n");
 		for (int i = Compiler.commandsList.size() - 1; i >= 0; i--) {
 			dataPath.instructionMemory[i] = Compiler.commandsList.remove(i);
 			dataPath.run1Cycle();
 		}
 //		System.out.println(dataPath.toInt(dataPath.registers[2]));
-		boolean returnValue = dataPath.toInt(dataPath.registers[2]) == 16;
+		boolean returnValue = dataPath.toInt(dataPath.registers[2]) == 32;
 		testsPassed = returnValue ? testsPassed + 1 : testsPassed;
 		return returnValue;
 	}
@@ -329,15 +331,15 @@ public class Tests {
 	static boolean slrTest() throws Exception {
 		testCount++;
 		dataPath.PC = 0;
-		dataPath.registers[0] = dataPath.toBooleanArray(16);
-		dataPath.registers[1] = dataPath.toBooleanArray(7);
-		Compiler.parse("slr $s2 $s0 3\n");
+		dataPath.registers[0] = dataPath.toBooleanArray(2);
+		dataPath.registers[1] = dataPath.toBooleanArray(16);
+		Compiler.parse("slr $s2 $s0 $s1\n");
 		for (int i = Compiler.commandsList.size() - 1; i >= 0; i--) {
 			dataPath.instructionMemory[i] = Compiler.commandsList.remove(i);
 			dataPath.run1Cycle();
 		}
 //		System.out.println(dataPath.toInt(dataPath.registers[2]));
-		boolean returnValue = dataPath.toInt(dataPath.registers[2]) == 2;
+		boolean returnValue = dataPath.toInt(dataPath.registers[2]) == 4;
 		testsPassed = returnValue ? testsPassed + 1 : testsPassed;
 		return returnValue;
 	}
@@ -385,7 +387,8 @@ public class Tests {
 			dataPath.run1Cycle();
 		}
 //		System.out.println(dataPath.PC);
-		boolean returnValue = dataPath.toInt(dataPath.registers[8]) == 0 && dataPath.PC == 2; // should it be 2 or 3?
+//		System.out.println("PC: " + dataPath.PC);
+		boolean returnValue = dataPath.toInt(dataPath.registers[8]) == 1 && dataPath.PC == 2; // should it be 2 or 3?
 		testsPassed = returnValue ? testsPassed + 1 : testsPassed;
 		return returnValue;
 	}
@@ -489,15 +492,19 @@ public class Tests {
 	static boolean loadWordTest() throws Exception {
 		testCount++;
 		dataPath.PC = 0;
-		dataPath.registers[0] = dataPath.toBooleanArray(0);
+		dataPath.dataMemory[9] = dataPath.toBooleanArray(11);
+		dataPath.registers[0] = dataPath.toBooleanArray(8);
+		dataPath.dataMemory[7] = dataPath.toBooleanArray(3);
 		dataPath.registers[1] = dataPath.toBooleanArray(9);
 		Compiler.parse("loadWord $s2 1 $s0\n");
 		for (int i = Compiler.commandsList.size() - 1; i >= 0; i--) {
+//			System.out.println(Arrays.toString(Compiler.commandsList.get(i)));
 			dataPath.instructionMemory[i] = Compiler.commandsList.remove(i);
 			dataPath.run1Cycle();
 		}
 //		System.out.println(dataPath.PC);
-		boolean returnValue = dataPath.toInt(dataPath.registers[2]) == 0;
+//		System.out.println("Register: " + dataPath.toInt(dataPath.registers[2]));
+		boolean returnValue = dataPath.toInt(dataPath.registers[2]) == 11;
 		testsPassed = returnValue ? testsPassed + 1 : testsPassed;
 		return returnValue;
 	}
@@ -514,7 +521,7 @@ public class Tests {
 			dataPath.run1Cycle();
 		}
 //		System.out.println(dataPath.PC);
-		boolean returnValue = dataPath.toInt(dataPath.registers[1]) == 5;
+		boolean returnValue = dataPath.toInt(dataPath.dataMemory[1]) == 5;
 		testsPassed = returnValue ? testsPassed + 1 : testsPassed;
 		return returnValue;
 	}
@@ -522,15 +529,16 @@ public class Tests {
 	static boolean storeAndSwapTest() throws Exception {
 		testCount++;
 		dataPath.PC = 0;
-		dataPath.registers[0] = dataPath.toBooleanArray(4);
-		dataPath.registers[1] = dataPath.toBooleanArray(9);
-		Compiler.parse("storeAndSwap $s0 1 $s2\n");
+		dataPath.registers[0] = dataPath.toBooleanArray(7);
+		dataPath.registers[1] = dataPath.toBooleanArray(1);
+		dataPath.dataMemory[2] = dataPath.toBooleanArray(8);
+		Compiler.parse("storeAndSwap $s0 1 $s1\n");
 		for (int i = Compiler.commandsList.size() - 1; i >= 0; i--) {
 			dataPath.instructionMemory[i] = Compiler.commandsList.remove(i);
 			dataPath.run1Cycle();
 		}
 //		System.out.println(dataPath.PC);
-		boolean returnValue = dataPath.toInt(dataPath.registers[0]) == 9 && dataPath.toInt(dataPath.registers[1]) == 4;
+		boolean returnValue = dataPath.toInt(dataPath.registers[0]) == 8 && dataPath.toInt(dataPath.dataMemory[2]) == 7;
 		testsPassed = returnValue ? testsPassed + 1 : testsPassed;
 		return returnValue;
 
