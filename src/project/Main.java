@@ -1,8 +1,6 @@
-package application;
+package project;
 	
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -31,6 +29,7 @@ public class Main extends Application {
 	public static ListView<register> registers;
 	static TextArea TextArea;
 	static TextArea TextArea2;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -153,19 +152,23 @@ public class Main extends Application {
 				public void handle(Event e) {
 					String code = TextArea.getText();
 					try {
-					//	System.out.println(code);
 						dataPath.PC=0;
 						for(int i=0;i<dataPath.registers.length;i++)
-						     dataPath.registers[i]=new boolean[dataPath.sizeOfData];
-						     
+							Arrays.fill(dataPath.registers[i], false);
+						for(int i=0;i<dataPath.dataMemorySize;i++)
+							Arrays.fill(dataPath.dataMemory[i], false);
+						for(int i=0;i<dataPath.instructionMemorySize;i++)
+							Arrays.fill(dataPath.instructionMemory[i], true);
+						
 						Compiler.parse(code);
-			            for(int i=0;i<Compiler.commandsList.size();i++) {
-			            	System.out.println(i+" "+Arrays.toString(Compiler.commandsList.get(i)));
+			            for(int i=0;i<Compiler.commandsList.size();i++)
 			            	dataPath.instructionMemory[i]=Compiler.commandsList.get(i);
+			            
+			            boolean [] allOnes=new boolean [18];
+			            Arrays.fill(allOnes, true);
+			            
+			            while(!deepEquals(dataPath.instructionMemory[dataPath.PC], allOnes))
 			            	dataPath.run1Cycle();
-			            	 
-			            }
-			     
 			        	
 			            ArrayList<register> registersar3 = new ArrayList<register>();
 			            for(int j=0;j<dataPath.registers.length;j++) {
@@ -180,7 +183,6 @@ public class Main extends Application {
 //						selection0.getChildren().addAll( registers,registers2);
 						
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
@@ -234,5 +236,12 @@ public class Main extends Application {
 	
 	public static void main(String[] args) {
 		launch(args);
+	}
+	public static boolean deepEquals(boolean [] a,boolean [] b)
+	{
+		if(a.length!=b.length)return false;
+		for(int i=0;i<a.length;i++)
+			if(a[i]!=b[i])return false;
+		return true;
 	}
 }
