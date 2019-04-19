@@ -123,8 +123,12 @@ public class Main extends Application {
 			
 			//////////////////////////////////////////////////////////////////////////////////////
 			Button runButton = new Button();
+			Button debugButton = new Button();
+			Button memoButton = new Button();
 			runButton.setStyle("-fx-background-size: 22px; -fx-background-repeat: no-repeat;-fx-background-image: url('run.jpg');");
-			HBox header = new HBox(runButton);
+			debugButton.setStyle("-fx-background-size: 22px; -fx-background-repeat: no-repeat;-fx-background-image: url('bug.png');");
+			memoButton.setStyle("-fx-background-size: 22px; -fx-background-repeat: no-repeat;-fx-background-image: url('memory.png');");
+			HBox header = new HBox(runButton,debugButton,memoButton);
 			header.setStyle("-fx-border-style: solid inside;   -fx-background-color: #ffffff;\n" + "    -fx-spacing: 10;");
 			
 			VBox selection3 = new VBox();
@@ -188,10 +192,93 @@ public class Main extends Application {
 				}
 			});
 			
+			
+			debugButton.setOnMouseClicked(new EventHandler() {
+				@Override
+				public void handle(Event e) {
+					String code = null;
+					String[] arr = TextArea.getText().split("\n");
+					int f=0;
+					for(int i=0;i<arr.length;i++) {
+						if((arr[i].charAt(0)<'a' || arr[i].charAt(0)>'z') &&f==0) {
+							f=1;
+							arr[i]=arr[i].substring(1);
+							if(i==arr.length-1) {
+								code = arr[0];
+								arr[0]="\u2192"+arr[0];
+							}else{
+								code = arr[i+1];
+								arr[i+1]="\u2192"+arr[i+1];
+								registers2.getItems().clear();
+							}
+						}
+					}
+					if(f==0) {
+						code = arr[0];
+						arr[0]="\u2192"+arr[0];
+					}
+					String backString = "";
+					for(int i=0;i<arr.length;i++) {
+						backString+=arr[i]+"\n";
+					}
+					TextArea.setText(backString);
+					try {
+						dataPath.PC=0;
+						for(int i=0;i<dataPath.registers.length;i++)
+							Arrays.fill(dataPath.registers[i], false);
+						for(int i=0;i<dataPath.dataMemorySize;i++)
+							Arrays.fill(dataPath.dataMemory[i], false);
+						for(int i=0;i<dataPath.instructionMemorySize;i++)
+							Arrays.fill(dataPath.instructionMemory[i], true);
+						
+						Compiler.parse(code);
+			            for(int i=0;i<Compiler.commandsList.size();i++)
+			            	dataPath.instructionMemory[i]=Compiler.commandsList.get(i);
+			            
+			            boolean [] allOnes=new boolean [18];
+			            Arrays.fill(allOnes, true);
+			            
+			            while(!deepEquals(dataPath.instructionMemory[dataPath.PC], allOnes))
+			            	dataPath.run1Cycle();
+			        	
+			            ArrayList<register> registersar3 = new ArrayList<register>();
+			            for(int j=0;j<dataPath.registers.length;j++) {
+			            	registersar3.add(new register(""+dataPath.toInt(dataPath.registers[j])));
+			            }  	
+		            	registersar3.add(new register(""+(dataPath.PC)));
+
+			            
+			            registers2.getItems().clear();
+						registers2.getItems().addAll(registersar3);		
+				
+						
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+			});
+			
+			memoButton.setOnMouseClicked(new EventHandler() {
+				@Override
+				public void handle(Event e) {
+					String code = TextArea2.getText();
+					int memadd = Integer.parseInt(code);
+					try {
+						TextArea2.setText("Memory at address "+code+" is having value "+dataPath.toInt(dataPath.dataMemory[memadd]));
+						
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+			});
+			
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+
 	
 	public class registerCellFactory implements Callback<ListView<register>, ListCell<register>> {
 		@Override
