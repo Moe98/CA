@@ -1,5 +1,6 @@
 package project;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,9 +23,18 @@ public class Compiler {
 		registerMap.put("$s1", new boolean[] { false, false, false, true });
 		registerMap.put("$s2", new boolean[] { false, false, true, false });
 		registerMap.put("$s3", new boolean[] { false, false, true, true });
-		registerMap.put("$t0", new boolean[] { false, true, false, false });
-		registerMap.put("$t1", new boolean[] { false, true, false, true });
-		registerMap.put("$t2", new boolean[] { false, true, true, false });
+		registerMap.put("$s4", new boolean[] { false, true, false, false });
+		registerMap.put("$t0", new boolean[] { false, true, false, true });
+		registerMap.put("$t1", new boolean[] { false, true, true, false });
+		registerMap.put("$t2", new boolean[] { false, true, true, true });
+		registerMap.put("$ra", new boolean[] { true, false, false, false });
+		registerMap.put("$sp", new boolean[] { true, false, false, true });
+		registerMap.put("$v0", new boolean[] { true, false, true, false });
+		registerMap.put("$v1", new boolean[] { true, false, true, true });
+		registerMap.put("$a0", new boolean[] { true, true, false, false });
+		registerMap.put("$a1", new boolean[] { true, true, false, true });
+		registerMap.put("$a2", new boolean[] { true, true, true, false });
+		
 		commandsList = new ArrayList<>();
 		// opcode 17-16
 		// rt 15-12 command [3]
