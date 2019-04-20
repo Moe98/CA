@@ -29,6 +29,7 @@ public class Main extends Application {
 	public static ListView<register> registers;
 	static TextArea TextArea;
 	static TextArea TextArea2;
+	static boolean piped;
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void start(Stage primaryStage) {
@@ -238,9 +239,16 @@ public class Main extends Application {
 			            boolean [] allOnes=new boolean [18];
 			            Arrays.fill(allOnes, true);
 			            
-			            while(!deepEquals(dataPath.instructionMemory[dataPath.PC], allOnes))
-			            	dataPath.run1Cycle();
-			        	
+			            
+			            if(piped){
+			            	for(int i=0;!deepEquals(dataPath.instructionMemory[dataPath.PC], allOnes);i++)
+			            		dataPath.run1CyclePipe(i==0, false);
+			            	dataPath.run1CyclePipe(i==0, true);
+			            }else{
+			            	while(!deepEquals(dataPath.instructionMemory[dataPath.PC], allOnes))
+				            	dataPath.run1Cycle();
+			            }
+			            
 			            ArrayList<register> registersar3 = new ArrayList<register>();
 			            for(int j=0;j<dataPath.registers.length;j++) {
 			            	registersar3.add(new register(""+dataPath.toInt(dataPath.registers[j])));

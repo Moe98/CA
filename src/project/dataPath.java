@@ -11,23 +11,44 @@ public class dataPath {
 	static boolean[][] instructionMemory = new boolean[instructionMemorySize][18];
 	static boolean[][] dataMemory = new boolean[dataMemorySize][sizeOfData];
 	static boolean[][] registers = new boolean[numberOfRegisters][sizeOfData];
+	static boolean[] registerRA;
+	static boolean[] part0to3;
+	static boolean[] part4to7;
+	static boolean[] part8to11;
+	static boolean[] part12to15;
+	static boolean[] part16to17;
+	static ControlSignals control;
+	static boolean got;
 
 	public static void main(String[] args) throws Exception {
-		instructionMemory[0] = new boolean[] { false, false, true, false, // funct
+		instructionMemory[0] = new boolean[] { false, false, false, false, // funct
 				false, false, true, true, // rd (offset)
 				false, false, true, false, // rs (data reg)
-				false, false, false, true, // rt (base)
+				false, false, false, false, // rt (base)
 				false, false // opcode
 		};
+		instructionMemory[1] = new boolean[] { false, false, false, true, // funct
+				false, true, false, false, // rd (offset)
+				false, true, false, true, // rs (data reg)
+				false, false, false, true, // rt (base)
+				false, true // opcode
+		};
 		registers[2] = toBooleanArray(7);
-		registers[1] = toBooleanArray(2);
+		registers[1] = toBooleanArray(9);
+		registers[5] = toBooleanArray(8);
+		dataMemory[3] = toBooleanArray(27);
 		System.out.println("Register: " + toInt(registers[2]));
 		System.out.println("Memory: " + toInt(dataMemory[5]));
-		run1Cycle();
-		System.out.println("Register: " + toInt(registers[2]));
-		System.out.println("Memory: " + toInt(dataMemory[5]));
-//		System.out.println("PC: "+PC);
-//		System.out.println("ANS: "+toInt(registers[8]));
+		runAllPipeLined(0, 1);
+		System.out.println(toInt(registers[2]));
+		System.out.println(PC);
+		// run1Cycle();
+		// System.out.println(toInt(registers[3]));
+		// System.out.println("Register: " + toInt(registers[2]));
+		// System.out.println("Memory: " + toInt(dataMemory[5]));
+		// System.out.println("PC: "+PC);
+		// System.out.println("ANS: "+toInt(registers[8]));
+		// System.out.println(instructionMemory[1][1]);
 	}
 
 	static void run1Cycle() throws Exception {
@@ -51,7 +72,7 @@ public class dataPath {
 		boolean[] readData2Mux = Mux(readData2, part8to11, part4to7, control.ALUSrc);
 		boolean[][] aluResult = ALU(readData1, readData2Mux, aluControl);
 		boolean[] actualResult = aluResult[0];
-//		System.out.println("actual resutlt: " + toInt(actualResult));
+		// System.out.println("actual resutlt: " + toInt(actualResult));
 		boolean Zero = aluResult[1][0];
 
 		int PC_Added4 = ADD4(PC);
@@ -67,12 +88,103 @@ public class dataPath {
 		Registers(part12to15, part8to11, writeRegister, writeData, control.RegWrite);
 	}
 
+	static void run1CyclePipe(boolean first, boolean last) throws Exception {
+		if (first) { // if in 1st step then we just fetch
+			boolean[] instruction = instructionMemory[PC];
+
+			part0to3 = reverse(Arrays.copyOfRange(instruction, 0, 4));
+			part4to7 = reverse(Arrays.copyOfRange(instruction, 4, 8));
+			part8to11 = reverse(Arrays.copyOfRange(instruction, 8, 12));
+			part12to15 = reverse(Arrays.copyOfRange(instruction, 12, 16));
+			part16to17 = reverse(Arrays.copyOfRange(instruction, 16, 18));
+			registerRA = toBooleanArray(8);
+			control = Control(part16to17, part0to3);
+		} else {
+			if (!first && !last) { // if in intermediate step then fetch the next
+								// and execute the current
+				boolean[] myPart0to3 = part0to3;
+				boolean[] myPart4to7 = part4to7;
+				boolean[] myPart8to11 = part8to11;
+				boolean[] myPart12to15 = part12to15;
+				boolean[] myPart16to17 = part16to17;
+				boolean[] myRegisterRA = registerRA;
+				ControlSignals myControl = control;
+				boolean[] instruction = instructionMemory[PC + 1];
+
+				part0to3 = reverse(Arrays.copyOfRange(instruction, 0, 4));
+				part4to7 = reverse(Arrays.copyOfRange(instruction, 4, 8));
+				part8to11 = reverse(Arrays.copyOfRange(instruction, 8, 12));
+				part12to15 = reverse(Arrays.copyOfRange(instruction, 12, 16));
+				part16to17 = reverse(Arrays.copyOfRange(instruction, 16, 18));
+				registerRA = toBooleanArray(8);
+				control = Control(part16to17, part0to3);
+
+				boolean[] writeRegister = Mux(myPart8to11, myPart4to7, myRegisterRA, myControl.RegDest);
+				boolean[][] localregisters = Registers(myPart12to15, myPart8to11, writeRegister, null,
+						myControl.RegWrite);
+				boolean[] readData1 = localregisters[0];
+				boolean[] readData2 = localregisters[1];
+
+				boolean[] aluControl = ALU_Control(myPart0to3, myControl.ALUOp);
+
+				boolean[] readData2Mux = Mux(readData2, myPart8to11, myPart4to7, myControl.ALUSrc);
+				boolean[][] aluResult = ALU(readData1, readData2Mux, aluControl);
+				boolean[] actualResult = aluResult[0];
+				// System.out.println("actual resutlt: " + toInt(actualResult));
+				boolean Zero = aluResult[1][0];
+
+				int PC_Added4 = ADD4(PC);
+				boolean[] branch_Result = ADD(myPart4to7, PC_Added4);
+				boolean andedSignal = AND(myControl.Branch, Zero);
+				boolean[] upperMux1 = Mux(toBooleanArray(PC_Added4), branch_Result, andedSignal);
+				boolean[] upperMux2 = Mux(upperMux1, readData1, myControl.Jump);
+				PC = toInt(upperMux2);
+
+				boolean[] data = dataMemory(actualResult, readData2, myControl.MemRead, myControl.MemWrite);
+				boolean[] writeData = Mux(actualResult, data, toBooleanArray(PC_Added4), myControl.MemToReg);
+
+				Registers(myPart12to15, myPart8to11, writeRegister, writeData, myControl.RegWrite);
+			} else { // if in last step execute the last and finish the code
+				boolean[] writeRegister = Mux(part8to11, part4to7, registerRA, control.RegDest);
+				boolean[][] localregisters = Registers(part12to15, part8to11, writeRegister, null, control.RegWrite);
+				boolean[] readData1 = localregisters[0];
+				boolean[] readData2 = localregisters[1];
+
+				boolean[] aluControl = ALU_Control(part0to3, control.ALUOp);
+
+				boolean[] readData2Mux = Mux(readData2, part8to11, part4to7, control.ALUSrc);
+				boolean[][] aluResult = ALU(readData1, readData2Mux, aluControl);
+				boolean[] actualResult = aluResult[0];
+				// System.out.println("actual resutlt: " + toInt(actualResult));
+				boolean Zero = aluResult[1][0];
+
+				int PC_Added4 = ADD4(PC);
+				boolean[] branch_Result = ADD(part4to7, PC_Added4);
+				boolean andedSignal = AND(control.Branch, Zero);
+				boolean[] upperMux1 = Mux(toBooleanArray(PC_Added4), branch_Result, andedSignal);
+				boolean[] upperMux2 = Mux(upperMux1, readData1, control.Jump);
+				PC = toInt(upperMux2);
+
+				boolean[] data = dataMemory(actualResult, readData2, control.MemRead, control.MemWrite);
+				boolean[] writeData = Mux(actualResult, data, toBooleanArray(PC_Added4), control.MemToReg);
+
+				Registers(part12to15, part8to11, writeRegister, writeData, control.RegWrite);
+			}
+		}
+	}
+
+//	static void runAllPipeLined(int firstInst, int lastInst) throws Exception {
+//		for (int i = 0; i <= lastInst - firstInst + 1; i++) {
+//			run1CyclePipe(i, lastInst - firstInst + 1);
+//		}
+//	}
+
 	static boolean[][] ALU(boolean[] readData1, boolean[] readData2, boolean[] ALU_Control) throws Exception {
 		int control = toInt(ALU_Control);
 		int data1 = toInt(readData1);
 		int data2 = toInt(readData2);
-//		System.out.println("ALU INPUTS: " + data1 + " " + data2);
-//		System.out.println("Control: " + control);
+		// System.out.println("ALU INPUTS: " + data1 + " " + data2);
+		// System.out.println("Control: " + control);
 		if (control == 0)// ADD
 			return new boolean[][] { toBooleanArray(data1 + data2), toBooleanArray(0) };
 		else if (control == 1)// SUB
@@ -84,17 +196,34 @@ public class dataPath {
 		else if (control == 4)// MOD
 			return new boolean[][] { toBooleanArray(data1 % data2), toBooleanArray(0) };
 		else if (control == 5)// COUNT_ONES
-			return new boolean[][] { toBooleanArray(Integer.bitCount(data1)), toBooleanArray(0) };// TODO check if it
-																									// uses data1 or
+			return new boolean[][] { toBooleanArray(Integer.bitCount(data1)), toBooleanArray(0) };// TODO
+																									// check
+																									// if
+																									// it
+																									// uses
+																									// data1
+																									// or
 																									// data2
 		else if (control == 6)// SWITCH_SIGN
-			return new boolean[][] { toBooleanArray(-1 * data1), toBooleanArray(0) };// TODO check if it uses data1 or
+			return new boolean[][] { toBooleanArray(-1 * data1), toBooleanArray(0) };// TODO
+																						// check
+																						// if
+																						// it
+																						// uses
+																						// data1
+																						// or
 																						// data2
 		else if (control == 7)// POWER
 			return new boolean[][] { toBooleanArray((int) Math.pow(data1, data2)), toBooleanArray(0) };
 		else if (control == 8)// ABS
-			return new boolean[][] { toBooleanArray(Math.abs(data1)), toBooleanArray(0) };// TODO check if it uses data1
-																							// or data2
+			return new boolean[][] { toBooleanArray(Math.abs(data1)), toBooleanArray(0) };// TODO
+																							// check
+																							// if
+																							// it
+																							// uses
+																							// data1
+																							// or
+																							// data2
 		else if (control == 9)// AND
 		{
 			boolean[] sol = new boolean[readData1.length];
@@ -127,21 +256,21 @@ public class dataPath {
 			return new boolean[][] { sol, toBooleanArray(0) };
 		} else if (control == 14)// SLL
 		{
-//			System.out.println("data1 sll: " + data1);
-//			System.out.println("data2 sll: " + data2);
+			// System.out.println("data1 sll: " + data1);
+			// System.out.println("data2 sll: " + data2);
 			int sll = data1 << data2;
-//			boolean[] sol = new boolean[readData1.length];
-//			for (int i = 0; i < readData1.length; i++)
-//				sol[i] = readData1[(i + data2) % readData1.length];
+			// boolean[] sol = new boolean[readData1.length];
+			// for (int i = 0; i < readData1.length; i++)
+			// sol[i] = readData1[(i + data2) % readData1.length];
 			return new boolean[][] { toBooleanArray(sll), toBooleanArray(0) };
 		} else if (control == 15)// SLR
 		{
-//			System.out.println("data1 slr: " + data1);
-//			System.out.println("data2 slr: " + data2);
+			// System.out.println("data1 slr: " + data1);
+			// System.out.println("data2 slr: " + data2);
 			int slr = data1 >> data2;
-//			boolean[] sol = new boolean[readData1.length];
-//			for (int i = 0; i < readData1.length; i++)
-//				sol[i] = readData1[(i - data2) % readData1.length];
+			// boolean[] sol = new boolean[readData1.length];
+			// for (int i = 0; i < readData1.length; i++)
+			// sol[i] = readData1[(i - data2) % readData1.length];
 			return new boolean[][] { toBooleanArray(slr), toBooleanArray(0) };
 		} else if (control == 16)// SLT
 			return new boolean[][] { toBooleanArray(data1 < data2 ? 1 : 0), toBooleanArray(0) };
