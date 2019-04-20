@@ -121,10 +121,11 @@ public class Main extends Application {
 			Button runButton = new Button();
 			Button debugButton = new Button();
 			Button memoButton = new Button();
+		        Button pipButton = new Button();
 			runButton.setStyle("-fx-background-size: 22px; -fx-background-repeat: no-repeat;-fx-background-image: url('run.jpg');");
 			debugButton.setStyle("-fx-background-size: 22px; -fx-background-repeat: no-repeat;-fx-background-image: url('bug.png');");
 			memoButton.setStyle("-fx-background-size: 22px; -fx-background-repeat: no-repeat;-fx-background-image: url('memory.png');");
-			HBox header = new HBox(runButton,debugButton,memoButton);
+			HBox header = new HBox(runButton,debugButton,memoButton,pipButton);
 			header.setStyle("-fx-border-style: solid inside;   -fx-background-color: #ffffff;\n" + "    -fx-spacing: 10;");
 			
 			VBox selection3 = new VBox();
@@ -188,6 +189,21 @@ public class Main extends Application {
 				}
 			});
 			
+			pipButton.setOnMouseClicked(new EventHandler() {
+				@Override
+				public void handle(Event e) {
+					
+					try {
+					   if(piped)
+						   piped=false;
+					   else
+						   piped=true;
+						
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+			});
 			
 			debugButton.setOnMouseClicked(new EventHandler() {
 				@Override
