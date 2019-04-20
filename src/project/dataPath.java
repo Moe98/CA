@@ -39,7 +39,7 @@ public class dataPath {
 		dataMemory[3] = toBooleanArray(27);
 		System.out.println("Register: " + toInt(registers[2]));
 		System.out.println("Memory: " + toInt(dataMemory[5]));
-		runAllPipeLined(0, 1);
+
 		System.out.println(toInt(registers[2]));
 		System.out.println(PC);
 		// run1Cycle();
@@ -172,12 +172,6 @@ public class dataPath {
 			}
 		}
 	}
-
-//	static void runAllPipeLined(int firstInst, int lastInst) throws Exception {
-//		for (int i = 0; i <= lastInst - firstInst + 1; i++) {
-//			run1CyclePipe(i, lastInst - firstInst + 1);
-//		}
-//	}
 
 	static boolean[][] ALU(boolean[] readData1, boolean[] readData2, boolean[] ALU_Control) throws Exception {
 		int control = toInt(ALU_Control);

@@ -7,22 +7,17 @@ import java.util.Arrays;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 
 public class Main extends Application {
@@ -243,7 +238,7 @@ public class Main extends Application {
 			            if(piped){
 			            	for(int i=0;!deepEquals(dataPath.instructionMemory[dataPath.PC], allOnes);i++)
 			            		dataPath.run1CyclePipe(i==0, false);
-			            	dataPath.run1CyclePipe(i==0, true);
+			            	dataPath.run1CyclePipe(false, true);
 			            }else{
 			            	while(!deepEquals(dataPath.instructionMemory[dataPath.PC], allOnes))
 				            	dataPath.run1Cycle();
