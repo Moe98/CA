@@ -125,10 +125,11 @@ public class Main extends Application {
 			Button runButton = new Button();
 			Button debugButton = new Button();
 			Button memoButton = new Button();
+			Button pipButton = new Button();
 			runButton.setStyle("-fx-background-size: 22px; -fx-background-repeat: no-repeat;-fx-background-image: url('run.jpg');");
 			debugButton.setStyle("-fx-background-size: 22px; -fx-background-repeat: no-repeat;-fx-background-image: url('bug.png');");
 			memoButton.setStyle("-fx-background-size: 22px; -fx-background-repeat: no-repeat;-fx-background-image: url('memory.png');");
-			HBox header = new HBox(runButton,debugButton,memoButton);
+			HBox header = new HBox(runButton,debugButton,memoButton,pipButton);
 			header.setStyle("-fx-border-style: solid inside;   -fx-background-color: #ffffff;\n" + "    -fx-spacing: 10;");
 			
 			VBox selection3 = new VBox();
@@ -152,6 +153,47 @@ public class Main extends Application {
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			
 			runButton.setOnMouseClicked(new EventHandler() {
+				@Override
+				public void handle(Event e) {
+					String code = TextArea.getText();
+					try {
+						dataPath.PC=0;
+						for(int i=0;i<dataPath.registers.length;i++)
+							Arrays.fill(dataPath.registers[i], false);
+						for(int i=0;i<dataPath.dataMemorySize;i++)
+							Arrays.fill(dataPath.dataMemory[i], false);
+						for(int i=0;i<dataPath.instructionMemorySize;i++)
+							Arrays.fill(dataPath.instructionMemory[i], true);
+						
+						Compiler.parse(code);
+			            for(int i=0;i<Compiler.commandsList.size();i++)
+			            	dataPath.instructionMemory[i]=Compiler.commandsList.get(i);
+			            
+			            boolean [] allOnes=new boolean [18];
+			            Arrays.fill(allOnes, true);
+			            
+			            while(!deepEquals(dataPath.instructionMemory[dataPath.PC], allOnes))
+			            	dataPath.run1Cycle();
+			        	
+			            ArrayList<register> registersar3 = new ArrayList<register>();
+			            for(int j=0;j<dataPath.registers.length;j++) {
+			            	registersar3.add(new register(""+dataPath.toInt(dataPath.registers[j])));
+			            }  	
+		            	registersar3.add(new register(""+(dataPath.PC)));
+
+			            
+			            registers2.getItems().clear();
+						registers2.getItems().addAll(registersar3);
+//						selection0.getChildren().clear();
+//						selection0.getChildren().addAll( registers,registers2);
+						
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+			});
+			
+			pipButton.setOnMouseClicked(new EventHandler() {
 				@Override
 				public void handle(Event e) {
 					String code = TextArea.getText();
