@@ -286,7 +286,7 @@ public class Compiler {
 				if (!(numberOfVariables > 3))
 					throw new Exception("Enter the proper number of variables.");
 				boolean opCode[] = new boolean[] { true, false };
-				boolean funct[] = new boolean[] { false, false, false, false };
+				boolean funct[] = new boolean[] { false, false, true, false };
 				for (int booleanCommandIterator = 16, j = 0; booleanCommandIterator <= 17; booleanCommandIterator++, j++)
 					booleanCommand[booleanCommandIterator] = opCode[j];
 				for (int booleanCommandIterator = 12, j = 0; booleanCommandIterator <= 15; booleanCommandIterator++, j++)
