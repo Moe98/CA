@@ -1,8 +1,8 @@
-#### Discription
+#### Description
 
 IDE simulation for MIPS Assembly Language Programming.
 
-#### Datapath used for the architecture
+#### Datapath Used For The Architecture
 
 
 <a href="https://ibb.co/LvzrSDv"><img src="https://i.ibb.co/KmjD6cm/dp.png" alt="dp" border="0"></a>
@@ -12,9 +12,9 @@ IDE simulation for MIPS Assembly Language Programming.
 
 <a href="https://ibb.co/ggw69BP"><img src="https://i.ibb.co/tCc3KWx/gui.png" alt="gui" border="0"></a>
 
-#### supported operations
+#### Supported Operations
 
-| Arithmetic operations | Logical Operations | Branching and Jumps | Load and Store |
+| Arithmetic Operations | Logical Operations | Branching and Jumps | Load and Store |
 |-----------------------|--------------------|---------------------|----------------|
 | add                   | and                | beq                 | loadWord       |
 | absolute              | or                 | bne                 | storeWord      |
@@ -29,6 +29,6 @@ IDE simulation for MIPS Assembly Language Programming.
 |                       |                    | branchOnAbsolute    |                |
 |                       |                    | branchOnDivisible   |                |
 
-#### Attribution
-The commits do not reflect the coding amount done by each contributor due to lack of professionalism in using Git at it's time. All the contributors and the collaborators in the repository coded in the project.
+#### Disclaimer
+The commits/LOC do not reflect the contribution done by each member of this repo due to not using Github properly at that time. All the contributors and the collaborators in this repository worked together to deliver the final product.
 
