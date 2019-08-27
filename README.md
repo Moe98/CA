@@ -4,11 +4,13 @@ IDE simulation for MIPS Assembly Language Programming.
 
 #### Datapath used for the architecture
 
-![Datapath](https://pasteboard.co/IuE7rKd.png)
+
+<a href="https://ibb.co/LvzrSDv"><img src="https://i.ibb.co/KmjD6cm/dp.png" alt="dp" border="0"></a>
 
 #### GUI created to simulate Mars program 
 
-![GUI](https://ibb.co/ggw69BP/to/img.png)
+
+<a href="https://ibb.co/ggw69BP"><img src="https://i.ibb.co/tCc3KWx/gui.png" alt="gui" border="0"></a>
 
 #### supported operations
 
